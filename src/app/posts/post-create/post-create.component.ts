@@ -14,9 +14,9 @@ export class PostCreateComponent implements OnInit, AfterViewInit{
   enteredTitle = '';
   enteredContent = '';
   postCreated;
+  post: Post;
   private mode = 'create';
   private postId: string;
-  post: Post;
 
   constructor(public postsService: PostsService, public route: ActivatedRoute) { }
 
@@ -26,20 +26,17 @@ export class PostCreateComponent implements OnInit, AfterViewInit{
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('postId')) {
-        this.mode = 'edit';
+        this.mode = "edit";
         this.postId = paramMap.get('postId');
-        this.postsService.getAsyncData(this.postId)
-        .then(postData => {
-          this.post = {id: postData.id, title: postData.title, content: postData.content};
-          console.log('inasyncdata' + this.post);
+        this.postsService.getPost(this.postId)
+        .subscribe(postData =>  {
+          this.post = { id: postData["post"]["_id"], title: postData["post"]["title"], content: postData["post"]["content"]};
         });
-        //.subscribe(postData =>  {
-        //   this.post = { id: postData._id, title: postData.title, content: postData.content};
-        // });
       } else {
-        this.mode = 'create';
+        this.mode = "create";
         this.postId = null;
       }
+      console.log(this.mode);
     });
   }
 

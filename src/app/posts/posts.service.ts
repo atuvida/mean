@@ -3,26 +3,29 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PostsService {
 
-  private posts: Post[] = [];
+  posts: Post[] = [];
   private postsUpdated = new Subject<Post[]>();
 
-constructor(private http: HttpClient) { }
+constructor(private http: HttpClient, private router: Router) { }
 
+  getPost(id: string) {
+    return this.http.get<{_id: string, title: string, content: string}>('http://localhost:3000/api/posts/' + id);
+  }
   getPosts() {
-    // return [...this.posts];
     this.http.get<{message: string, posts: any}>('http://localhost:3000/api/posts')
     .pipe(map((postData) => {
       return postData.posts.map(post => {
         return {
+          id: post._id,
           title: post.title,
-          content: post.content,
-          id: post._id
+          content: post.content
         };
       });
     }))
@@ -35,10 +38,6 @@ constructor(private http: HttpClient) { }
   getPostUpdateListener() {
     return this.postsUpdated.asObservable();
   }
-
- getPost(id: string) {
-  return this.http.get<{_id: string, title: string, content: string}>('http://localhost:3000/api/posts/' + id);
-}
 
 async getAsyncData(id: string): Promise<Post> {
     const response = await  this.http.get<{_id: string, title: string, content: string}>('http://localhost:3000/api/posts/' + id)
@@ -58,6 +57,7 @@ async getAsyncData(id: string): Promise<Post> {
       post.id = id;
       this.posts.push(post);
       this.postsUpdated.next([...this.posts]);
+      this.router.navigate("/");
     });
   }
 
@@ -70,6 +70,7 @@ async getAsyncData(id: string): Promise<Post> {
       updatedPosts[oldPostIndex] = post;
       this.posts = updatedPosts;
       this.postsUpdated.next([...this.posts]);
+      this.router.navigate("/");
     });
   }
 
