@@ -57,7 +57,7 @@ async getAsyncData(id: string): Promise<Post> {
       post.id = id;
       this.posts.push(post);
       this.postsUpdated.next([...this.posts]);
-      this.router.navigate("/");
+      this.router.navigate(["/"]);
     });
   }
 
@@ -70,7 +70,7 @@ async getAsyncData(id: string): Promise<Post> {
       updatedPosts[oldPostIndex] = post;
       this.posts = updatedPosts;
       this.postsUpdated.next([...this.posts]);
-      this.router.navigate("/");
+      this.router.navigate(["/"]);
     });
   }
 
